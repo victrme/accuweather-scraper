@@ -1,0 +1,21 @@
+{
+	"name": "accuweather-scraper",
+	"version": "0.0.1",
+	"scripts": {
+		"deploy": "wrangler deploy",
+		"dev": "wrangler dev"
+	},
+	"devDependencies": {
+		"wrangler": "3.52.0"
+	},
+	"dependencies": {
+		"striptags": "^3.2.0"
+	},
+	"prettier": {
+		"tabWidth": 4,
+		"useTabs": true,
+		"semi": false,
+		"singleQuote": true,
+		"printWidth": 100
+	}
+}
