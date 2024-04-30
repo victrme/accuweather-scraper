@@ -1,25 +1,25 @@
 import striptags from 'striptags'
 
-export default {
-	async fetch(request, env, ctx) {
-		const url = new URL(request.url)
-		const unit = url.searchParams.get('unit') ?? 'C'
-		const lang = url.searchParams.get('lang') ?? 'en'
-		const lat = url.searchParams.get('lat') ?? request.cf.latitude
-		const lon = url.searchParams.get('lon') ?? request.cf.longitude
+export default { fetch: main }
 
-		const html = await getWeatherHTML(lat, lon, lang, unit)
-		const json = parseContent(html)
+async function main(request) {
+	const url = new URL(request.url)
+	const unit = url.searchParams.get('unit') ?? 'C'
+	const lang = url.searchParams.get('lang') ?? 'en'
+	const lat = url.searchParams.get('lat') ?? request.cf.latitude
+	const lon = url.searchParams.get('lon') ?? request.cf.longitude
 
-		return new Response(JSON.stringify(json), {
-			headers: {
-				'access-control-allow-methods': 'GET',
-				'access-control-allow-origin': '*',
-				'content-type': 'application/json',
-				'cache-control': 'public, max-age=10',
-			},
-		})
-	},
+	const html = await getWeatherHTML(lat, lon, lang, unit)
+	const json = parseContent(html)
+
+	const headers = {
+		'access-control-allow-methods': 'GET',
+		'access-control-allow-origin': '*',
+		'content-type': 'application/json',
+		'cache-control': 'public, max-age=10',
+	}
+
+	return new Response(JSON.stringify(json), { headers })
 }
 
 // Parse
