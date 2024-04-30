@@ -3,11 +3,12 @@ import striptags from 'striptags'
 export default {
 	async fetch(request, env, ctx) {
 		const url = new URL(request.url)
-		const unit = url.searchParams.get('unit') ?? 'metric'
+		const unit = url.searchParams.get('unit') ?? 'C'
+		const lang = url.searchParams.get('lang') ?? 'en'
 		const lat = url.searchParams.get('lat') ?? request.cf.latitude
 		const lon = url.searchParams.get('lon') ?? request.cf.longitude
 
-		const html = await getWeatherHTML(lat, lon, unit)
+		const html = await getWeatherHTML(lat, lon, lang, unit)
 		const json = parseContent(html)
 
 		return new Response(JSON.stringify(json), {
@@ -159,12 +160,16 @@ function htmlContentToStringArray(html, start, end) {
  *
  * @param {number} lat - Latitude coordinates
  * @param {number} lon - Longitude coordinates
- * @param {"metric" | "football-field"} unit - Either real units or football fields
+ * @param {string} lang - Content language, "en" by default
+ * @param {"C" | "F"} unit - Either celsius or football fields
  * @returns {Promise<string>}
  */
-async function getWeatherHTML(lat, lon, unit) {
+async function getWeatherHTML(lat, lon, lang, unit) {
 	const path = `https://www.accuweather.com/en/search-locations?query=${lat},${lon}`
 	const firefoxAndroid = 'Mozilla/5.0 (Android 14; Mobile; rv:109.0) Gecko/124.0 Firefox/124.0'
+
+	// TODO
+	lang = 'en'
 
 	const resp = await fetch(path, {
 		headers: {
@@ -172,6 +177,7 @@ async function getWeatherHTML(lat, lon, unit) {
 			'Accept-Encoding': 'gzip, deflate, br',
 			'Accept-Language': 'en',
 			'User-Agent': firefoxAndroid,
+			Cookie: `awx_user=tp:${unit}|lang:${lang};`,
 		},
 	})
 
