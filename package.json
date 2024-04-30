@@ -9,6 +9,7 @@
 		"wrangler": "3.52.0"
 	},
 	"dependencies": {
+		"html-entities": "^2.5.2",
 		"striptags": "^3.2.0"
 	},
 	"prettier": {

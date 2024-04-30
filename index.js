@@ -1,3 +1,4 @@
+import { decode } from 'html-entities'
 import striptags from 'striptags'
 
 export default { fetch: main }
@@ -9,14 +10,19 @@ async function main(request) {
 	const lat = url.searchParams.get('lat') ?? request.cf.latitude
 	const lon = url.searchParams.get('lon') ?? request.cf.longitude
 
+	let start = performance.now()
 	const html = await getWeatherHTML(lat, lon, lang, unit)
+	console.log(performance.now() - start)
+
+	start = performance.now()
 	const json = parseContent(html)
+	console.log(performance.now() - start)
 
 	const headers = {
 		'access-control-allow-methods': 'GET',
 		'access-control-allow-origin': '*',
 		'content-type': 'application/json',
-		'cache-control': 'public, max-age=10',
+		'cache-control': 'public, max-age=1800',
 	}
 
 	return new Response(JSON.stringify(json), { headers })
@@ -32,7 +38,7 @@ function parseContent(html) {
 	let date = new Date()
 	let result = {}
 
-	html = html.replaceAll('&#xB0;', '')
+	html = html.replaceAll('°', '')
 
 	let today = htmlContentToStringArray(
 		html,
@@ -55,7 +61,7 @@ function parseContent(html) {
 
 	result.now = {
 		temp: parseInt(current[3]),
-		feels: parseInt(current[6].slice(14)),
+		feels: parseInt(current[6].slice(9)),
 		description: current[5],
 	}
 
@@ -165,7 +171,7 @@ function htmlContentToStringArray(html, start, end) {
  * @returns {Promise<string>}
  */
 async function getWeatherHTML(lat, lon, lang, unit) {
-	const path = `https://www.accuweather.com/en/search-locations?query=${lat},${lon}`
+	const path = `https://www.accuweather.com/${lang}/search-locations?query=${lat},${lon}`
 	const firefoxAndroid = 'Mozilla/5.0 (Android 14; Mobile; rv:109.0) Gecko/124.0 Firefox/124.0'
 
 	// TODO
@@ -174,17 +180,18 @@ async function getWeatherHTML(lat, lon, lang, unit) {
 	const resp = await fetch(path, {
 		headers: {
 			Accept: 'text/html',
-			'Accept-Encoding': 'gzip, deflate, br',
+			'Accept-Encoding': 'gzip',
 			'Accept-Language': 'en',
 			'User-Agent': firefoxAndroid,
 			Cookie: `awx_user=tp:${unit}|lang:${lang};`,
 		},
 	})
 
-	const text = await resp.text()
+	let text = await resp.text()
+
+	text = text.slice(text.indexOf('id="interstitial'), text.indexOf('id="bottom'))
+	text = text.replaceAll('\n', '').replaceAll('\t', '')
+	text = decode(text)
 
 	return text
-		.slice(text.indexOf('id="interstitial'), text.indexOf('id="bottom'))
-		.replaceAll('\n', '')
-		.replaceAll('\t', '')
 }
