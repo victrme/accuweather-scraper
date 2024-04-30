@@ -203,15 +203,15 @@ async function getWeatherHTML(lat, lon, lang, unit) {
 
 /**
  * @typedef {Object} AccuWeather
- * @prop {AccuWeatherToday} [today] - Today's information. Only available in english
- * @prop {AccuWeatherNow} now - Current weather information, with felt temperature
- * @prop {AccuWeatherHourly[]} hourly - 12 hours of hourly forecasted temperature and rain
- * @prop {AccuWeatherDaily[]} daily - 10 days of daily forecast, similar to "today"
- *
+ * @prop {Today} [today] - Today's information. Only available in english
+ * @prop {Now} now - Current weather information, with felt temperature
+ * @prop {Sun} sun - Current day sun time information
+ * @prop {Hourly[]} hourly - 12 hours of hourly forecasted temperature and rain
+ * @prop {Daily[]} daily - 10 days of daily forecast, similar to "today"
  */
 
 /**
- * @typedef {Object} AccuWeatherToday
+ * @typedef {Object} Today
  * @prop {string} day - Description of today's weather
  * @prop {string} night - Description of tonight's weather
  * @prop {number} high - Expected temperature high for today
@@ -219,7 +219,7 @@ async function getWeatherHTML(lat, lon, lang, unit) {
  */
 
 /**
- * @typedef {Object} AccuWeatherNow
+ * @typedef {Object} Now
  * @prop {number} icon - Icon ID, more here: https://developer.accuweather.com/weather-icons
  * @prop {number} temp - Classic temperature
  * @prop {number} feels - Felt temperature, using RealFeel® tech
@@ -227,14 +227,21 @@ async function getWeatherHTML(lat, lon, lang, unit) {
  */
 
 /**
- * @typedef {Object} AccuWeatherHourly
+ * @typedef {Object} Sun
+ * @prop {string} duration - A string for the time between sunrise and sunset
+ * @prop {number} rise - Sunrise timestamp today
+ * @prop {number} set - Sunset timestamp today
+ */
+
+/**
+ * @typedef {Object} Hourly
  * @prop {number} timestamp - Unix timestamp
  * @prop {number} temp - Classic temperature
  * @prop {string} rain - Percent chance of rain
  */
 
 /**
- * @typedef {Object} AccuWeatherDaily
+ * @typedef {Object} Daily
  * @prop {number} timestamp - Unix timestamp
  * @prop {number} high - Highest temperature this day
  * @prop {number} low - Lowest temperature this day

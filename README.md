@@ -27,38 +27,40 @@ A single JSON object from all the information available on the "weather-forecast
 
 ```js
 const example = {
-  now: {
-    icon: 7,
-    temp: 16,
-    feels: 15,
-    description: 'Nublado',
-  },
-  sun: {
-    duration: '14 h 17 min',
-    rise: 1714451460000,
-    set: 1714502880000,
-  },
-  hourly: [
-    {
-      timestamp: 1714485600000,
-      temp: 14,
-      rain: '65 %',
-    },
-  ],
-  daily: [
-    {
-      timestamp: 1714485600000,
-      high: 16,
-      low: 8,
-      day: 'Chubascos en la tarde',
-      night: 'Algo de lluvia más tarde',
-      rain: '100 %',
-    },
-  ],
+	now: {
+		icon: 7,
+		temp: 16,
+		feels: 15,
+		description: 'Nublado',
+	},
+	sun: {
+		duration: '14 h 17 min',
+		rise: 1714451460000,
+		set: 1714502880000,
+	},
+	hourly: [
+		{
+			timestamp: 1714485600000,
+			temp: 14,
+			rain: '65 %',
+		},
+	],
+	daily: [
+		{
+			timestamp: 1714485600000,
+			high: 16,
+			low: 8,
+			day: 'Chubascos en la tarde',
+			night: 'Algo de lluvia más tarde',
+			rain: '100 %',
+		},
+	],
 }
 ```
 
-## Typescript
+## Types
+
+### Typescript
 
 Here is an example on how you can use this in a Typescript codebase:
 
@@ -66,58 +68,111 @@ Here is an example on how you can use this in a Typescript codebase:
 let json: AccuWeather.Data
 
 try {
-  const response = await fetch('your-endpoint.worker.dev')
-  json = await response.json()
+	const response = await fetch('your-endpoint.worker.dev')
+	json = await response.json()
 } catch (e) {
-  console.log('Witness my error handling skills')
+	console.log('Witness my error handling skills')
 }
 ```
 
 ```ts
 namespace AccuWeather {
-  export interface Data {
-    today?: Today
-    now: Now
-    sun: Sun
-    hourly: Hourly[]
-    daily: Daily[]
-  }
+	export interface Data {
+		today?: Today
+		now: Now
+		sun: Sun
+		hourly: Hourly[]
+		daily: Daily[]
+	}
 
-  export type Today = {
-    day: string
-    night: string
-    high: number
-    low: number
-  }
+	export type Today = {
+		day: string
+		night: string
+		high: number
+		low: number
+	}
 
-  export type Now = {
-    icon: number
-    temp: number
-    feels: number
-    description: string
-  }
+	export type Now = {
+		icon: number
+		temp: number
+		feels: number
+		description: string
+	}
 
-  export type Sun = {
-    duration: string
-    rise: number
-    set: number
-  }
+	export type Sun = {
+		duration: string
+		rise: number
+		set: number
+	}
 
-  export type Hourly = {
-    timestamp: number
-    temp: number
-    rain: string
-  }
+	export type Hourly = {
+		timestamp: number
+		temp: number
+		rain: string
+	}
 
-  export type Daily = {
-    timestamp: number
-    high: number
-    low: number
-    day: string
-    night: string
-    rain: string
-  }
+	export type Daily = {
+		timestamp: number
+		high: number
+		low: number
+		day: string
+		night: string
+		rain: string
+	}
 }
+```
+
+### JSDoc
+
+```js
+/**
+ * @typedef {Object} AccuWeather
+ * @prop {Today} [today] - Today's information. Only available in english
+ * @prop {Now} now - Current weather information, with felt temperature
+ * @prop {Sun} sun - Current day sun time information
+ * @prop {Hourly[]} hourly - 12 hours of hourly forecasted temperature and rain
+ * @prop {Daily[]} daily - 10 days of daily forecast, similar to "today"
+ */
+
+/**
+ * @typedef {Object} Today
+ * @prop {string} day - Description of today's weather
+ * @prop {string} night - Description of tonight's weather
+ * @prop {number} high - Expected temperature high for today
+ * @prop {number} low - Expected temperature low for today
+ */
+
+/**
+ * @typedef {Object} Now
+ * @prop {number} icon - Icon ID, more here: https://developer.accuweather.com/weather-icons
+ * @prop {number} temp - Classic temperature
+ * @prop {number} feels - Felt temperature, using RealFeel® tech
+ * @prop {string} description - Short weather description
+ */
+
+/**
+ * @typedef {Object} Sun
+ * @prop {string} duration - A string for the time between sunrise and sunset
+ * @prop {number} rise - Sunrise timestamp today
+ * @prop {number} set - Sunset timestamp today
+ */
+
+/**
+ * @typedef {Object} Hourly
+ * @prop {number} timestamp - Unix timestamp
+ * @prop {number} temp - Classic temperature
+ * @prop {string} rain - Percent chance of rain
+ */
+
+/**
+ * @typedef {Object} Daily
+ * @prop {number} timestamp - Unix timestamp
+ * @prop {number} high - Highest temperature this day
+ * @prop {number} low - Lowest temperature this day
+ * @prop {string} day - Weather description for the day
+ * @prop {string} night - Weather description for the night
+ * @prop {string} rain - Percent chance of rain
+ */
 ```
 
 ## Deploy your own
