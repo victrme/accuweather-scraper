@@ -10,13 +10,8 @@ async function main(request) {
 	const lat = url.searchParams.get('lat') ?? request.cf.latitude
 	const lon = url.searchParams.get('lon') ?? request.cf.longitude
 
-	let start = performance.now()
 	const html = await getWeatherHTML(lat, lon, lang, unit)
-	console.log(performance.now() - start)
-
-	start = performance.now()
 	const json = parseContent(html)
-	console.log(performance.now() - start)
 
 	const headers = {
 		'access-control-allow-methods': 'GET',
@@ -40,17 +35,28 @@ function parseContent(html) {
 
 	html = html.replaceAll('°', '')
 
-	let today = htmlContentToStringArray(
-		html,
-		html.indexOf('today-forecast-card'),
-		html.indexOf('cur-con-weather-card')
-	)
+	if (html.indexOf('today-forecast-card') > 0) {
+		let today = htmlContentToStringArray(
+			html,
+			html.indexOf('today-forecast-card'),
+			html.indexOf('cur-con-weather-card')
+		)
 
-	result.today = {
-		day: today[3].trimStart(),
-		night: today[5].slice(today[5].indexOf(': ') + 2),
-		high: parseInt(today[4].slice(4)),
-		low: parseInt(today[6].slice(4)),
+		result.today = {
+			day: today[3].trimStart(),
+			night: today[5].slice(today[5].indexOf(': ') + 2),
+			high: parseInt(today[4].slice(4)),
+			low: parseInt(today[6].slice(4)),
+		}
+	}
+
+	let icon = html.slice(html.indexOf('forecast-container'), html.indexOf('temp-container'))
+
+	icon = icon.slice(icon.indexOf('data-src="'), icon.indexOf('.svg"') + 5)
+	icon = icon.slice(icon.lastIndexOf('/') + 1, icon.indexOf('.'))
+
+	result.now = {
+		icon: parseInt(icon),
 	}
 
 	let current = htmlContentToStringArray(
@@ -59,11 +65,9 @@ function parseContent(html) {
 		html.indexOf('local-forecast-summary')
 	)
 
-	result.now = {
-		temp: parseInt(current[3]),
-		feels: parseInt(current[6].slice(9)),
-		description: current[5],
-	}
+	result.now.temp = parseInt(current[3])
+	result.now.feels = parseInt(current[6].replace('RealFeel®', ''))
+	result.now.description = current[5]
 
 	let sun = htmlContentToStringArray(
 		html,
@@ -173,9 +177,6 @@ function htmlContentToStringArray(html, start, end) {
 async function getWeatherHTML(lat, lon, lang, unit) {
 	const path = `https://www.accuweather.com/${lang}/search-locations?query=${lat},${lon}`
 	const firefoxAndroid = 'Mozilla/5.0 (Android 14; Mobile; rv:109.0) Gecko/124.0 Firefox/124.0'
-
-	// TODO
-	lang = 'en'
 
 	const resp = await fetch(path, {
 		headers: {
