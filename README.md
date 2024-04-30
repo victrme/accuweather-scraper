@@ -27,34 +27,34 @@ A single JSON object from all the information available on the "weather-forecast
 
 ```js
 const example = {
-	now: {
-		icon: 7,
-		temp: 16,
-		feels: 15,
-		description: 'Nublado',
-	},
-	sun: {
-		duration: '14 h 17 min',
-		rise: 1714451460000,
-		set: 1714502880000,
-	},
-	hourly: [
-		{
-			timestamp: 1714485600000,
-			temp: 14,
-			rain: '65 %',
-		},
-	],
-	daily: [
-		{
-			timestamp: 1714485600000,
-			high: 16,
-			low: 8,
-			day: 'Chubascos en la tarde',
-			night: 'Algo de lluvia más tarde',
-			rain: '100 %',
-		},
-	],
+  now: {
+    icon: 7,
+    temp: 16,
+    feels: 15,
+    description: 'Nublado',
+  },
+  sun: {
+    duration: '14 h 17 min',
+    rise: 1714451460000,
+    set: 1714502880000,
+  },
+  hourly: [
+    {
+      timestamp: 1714485600000,
+      temp: 14,
+      rain: '65 %',
+    },
+  ],
+  daily: [
+    {
+      timestamp: 1714485600000,
+      high: 16,
+      low: 8,
+      day: 'Chubascos en la tarde',
+      night: 'Algo de lluvia más tarde',
+      rain: '100 %',
+    },
+  ],
 }
 ```
 
@@ -66,57 +66,57 @@ Here is an example on how you can use this in a Typescript codebase:
 let json: AccuWeather.Data
 
 try {
-	const response = await fetch('your-endpoint.worker.dev')
-	json = await response.json()
+  const response = await fetch('your-endpoint.worker.dev')
+  json = await response.json()
 } catch (e) {
-	console.log('Witness my error handling skills')
+  console.log('Witness my error handling skills')
 }
 ```
 
 ```ts
 namespace AccuWeather {
-	export interface Data {
-		today?: Today
-		now: Now
-		sun: Sun
-		hourly: Hourly[]
-		daily: Daily[]
-	}
+  export interface Data {
+    today?: Today
+    now: Now
+    sun: Sun
+    hourly: Hourly[]
+    daily: Daily[]
+  }
 
-	export type Today = {
-		day: string
-		night: string
-		high: number
-		low: number
-	}
+  export type Today = {
+    day: string
+    night: string
+    high: number
+    low: number
+  }
 
-	export type Now = {
-		icon: number
-		temp: number
-		feels: number
-		description: string
-	}
+  export type Now = {
+    icon: number
+    temp: number
+    feels: number
+    description: string
+  }
 
-	export type Sun = {
-		duration: string
-		rise: number
-		set: number
-	}
+  export type Sun = {
+    duration: string
+    rise: number
+    set: number
+  }
 
-	export type Hourly = {
-		timestamp: number
-		temp: number
-		rain: string
-	}
+  export type Hourly = {
+    timestamp: number
+    temp: number
+    rain: string
+  }
 
-	export type Daily = {
-		timestamp: number
-		high: number
-		low: number
-		day: string
-		night: string
-		rain: string
-	}
+  export type Daily = {
+    timestamp: number
+    high: number
+    low: number
+    day: string
+    night: string
+    rain: string
+  }
 }
 ```
 
