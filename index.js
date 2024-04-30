@@ -27,10 +27,12 @@ async function main(request) {
 
 /**
  * @param {string} html
- * @returns {Object}
+ * @returns {AccuWeather}
  */
 function parseContent(html) {
 	let date = new Date()
+
+	/** @type {AccuWeather} */
 	let result = {}
 
 	html = html.replaceAll('°', '')
@@ -196,3 +198,47 @@ async function getWeatherHTML(lat, lon, lang, unit) {
 
 	return text
 }
+
+// Types
+
+/**
+ * @typedef {Object} AccuWeather
+ * @prop {AccuWeatherToday} [today] - Today's information. Only available in english
+ * @prop {AccuWeatherNow} now - Current weather information, with felt temperature
+ * @prop {AccuWeatherHourly[]} hourly - 12 hours of hourly forecasted temperature and rain
+ * @prop {AccuWeatherDaily[]} daily - 10 days of daily forecast, similar to "today"
+ *
+ */
+
+/**
+ * @typedef {Object} AccuWeatherToday
+ * @prop {string} day - Description of today's weather
+ * @prop {string} night - Description of tonight's weather
+ * @prop {number} high - Expected temperature high for today
+ * @prop {number} low - Expected temperature low for today
+ */
+
+/**
+ * @typedef {Object} AccuWeatherNow
+ * @prop {number} icon - Icon ID, more here: https://developer.accuweather.com/weather-icons
+ * @prop {number} temp - Classic temperature
+ * @prop {number} feels - Felt temperature, using RealFeel® tech
+ * @prop {string} description - Short weather description
+ */
+
+/**
+ * @typedef {Object} AccuWeatherHourly
+ * @prop {number} timestamp - Unix timestamp
+ * @prop {number} temp - Classic temperature
+ * @prop {string} rain - Percent chance of rain
+ */
+
+/**
+ * @typedef {Object} AccuWeatherDaily
+ * @prop {number} timestamp - Unix timestamp
+ * @prop {number} high - Highest temperature this day
+ * @prop {number} low - Lowest temperature this day
+ * @prop {string} day - Weather description for the day
+ * @prop {string} night - Weather description for the night
+ * @prop {string} rain - Percent chance of rain
+ */
