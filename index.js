@@ -137,11 +137,11 @@ function parseContent(html) {
 	for (let i = 2; i < daily.length; i += 7) {
 		result.daily.push({
 			timestamp: date.getTime(),
-			high: parseInt(daily[i + 2]),
-			low: parseInt(daily[i + 3]),
-			day: daily[i + 4],
-			night: daily[i + 5],
-			rain: daily[i + 6],
+			high: parseInt(daily[i + 1]),
+			low: parseInt(daily[i + 2]),
+			day: daily[i + 3],
+			night: daily[i + 4],
+			rain: daily[i + 5],
 		})
 
 		date.setDate(date.getDate() + 1)
