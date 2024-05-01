@@ -12,6 +12,7 @@ async function main(request) {
 
 	const html = await getWeatherHTML(lat, lon, lang, unit)
 	const json = parseContent(html)
+	const result = { lat, lon, ...json }
 
 	const headers = {
 		'access-control-allow-methods': 'GET',
@@ -20,7 +21,7 @@ async function main(request) {
 		'cache-control': 'public, max-age=1800',
 	}
 
-	return new Response(JSON.stringify(json), { headers })
+	return new Response(JSON.stringify(result), { headers })
 }
 
 // Parse
@@ -37,28 +38,16 @@ function parseContent(html) {
 
 	html = html.replaceAll('°', '')
 
-	let location = htmlContentToStringArray(html, html.indexOf('<h1 '), html.indexOf('</h1>'))
+	const location = htmlContentToStringArray(html, html.indexOf('<h1 '), html.indexOf('</h1>'))
 	const [city, region] = location[0].split(', ')
 
-	result.location = {
-		city,
-		region,
-	}
+	result.city = city
+	result.region = region
 
-	if (html.indexOf('today-forecast-card') > 0) {
-		let today = htmlContentToStringArray(
-			html,
-			html.indexOf('today-forecast-card'),
-			html.indexOf('cur-con-weather-card')
-		)
+	let path = html.slice(html.indexOf('header-city-link'), html.indexOf('<h1'))
+	path = path.slice(path.indexOf('href') + 10, path.indexOf('/weather-forecast'))
 
-		result.today = {
-			day: today[3].trimStart(),
-			night: today[5].slice(today[5].indexOf(': ') + 2),
-			high: parseInt(today[4].slice(4)),
-			low: parseInt(today[6].slice(4)),
-		}
-	}
+	result.path = path
 
 	let icon = html.slice(html.indexOf('forecast-container'), html.indexOf('temp-container'))
 
@@ -85,14 +74,13 @@ function parseContent(html) {
 		html.indexOf('air-quality-module__title')
 	)
 
-	let [rh, rm] = sun[3].split(':')
-	let [sh, sm] = sun[5].split(':')
+	let sunrisePM = sun[3].includes('PM')
+	let sunsetPM = sun[5].includes('PM')
+	let [rh, rm] = sun[3].replace('AM', '').replace('PM', '').split(':')
+	let [sh, sm] = sun[5].replace('AM', '').replace('PM', '').split(':')
 
-	if (rm.includes('PM')) rh += 12
-	if (sm.includes('PM')) sh += 12
-
-	rm = parseInt(rm.replace(' AM', '').replace(' PM', ''))
-	sm = parseInt(sm.replace(' AM', '').replace(' PM', ''))
+	rm = parseInt(rm) + (sunrisePM ? 12 : 0)
+	sm = parseInt(sm) + (sunsetPM ? 12 : 0)
 
 	date = new Date()
 	const sunrise = new Date(date.getFullYear(), date.getMonth(), date.getDate(), rh, rm)
@@ -102,6 +90,21 @@ function parseContent(html) {
 		duration: sun[1],
 		rise: sunrise.getTime(),
 		set: sunset.getTime(),
+	}
+
+	if (html.indexOf('today-forecast-card') > 0) {
+		let today = htmlContentToStringArray(
+			html,
+			html.indexOf('today-forecast-card'),
+			html.indexOf('cur-con-weather-card')
+		)
+
+		result.today = {
+			day: today[3].trimStart(),
+			night: today[5].slice(today[5].indexOf(': ') + 2),
+			high: parseInt(today[4].slice(4)),
+			low: parseInt(today[6].slice(4)),
+		}
 	}
 
 	let hourly = htmlContentToStringArray(
@@ -123,7 +126,7 @@ function parseContent(html) {
 		result.hourly.push({
 			timestamp: date.getTime(),
 			temp: parseInt(hourly[i + 1]),
-			rain: hourly[i + 2],
+			rain: hourly[i + 2].replace(' ', ''),
 		})
 
 		date.setHours(date.getHours() + 1)
@@ -131,7 +134,7 @@ function parseContent(html) {
 
 	let daily = htmlContentToStringArray(
 		html,
-		html.indexOf('daily-list'),
+		html.indexOf('daily-list-body'),
 		html.indexOf('sunrise-sunset')
 	)
 
@@ -192,7 +195,7 @@ async function getWeatherHTML(lat, lon, lang, unit) {
 		headers: {
 			Accept: 'text/html',
 			'Accept-Encoding': 'gzip',
-			'Accept-Language': 'en',
+			'Accept-Language': lang,
 			'User-Agent': firefoxAndroid,
 			Cookie: `awx_user=tp:${unit}|lang:${lang};`,
 		},
@@ -211,18 +214,14 @@ async function getWeatherHTML(lat, lon, lang, unit) {
 
 /**
  * @typedef {Object} AccuWeather
- * @prop {Location} location - Found location by Accuweather
- * @prop {Today} [today] - Today's information. Only available in english
+ * @prop {string} city - City location found by the provider
+ * @prop {string} region - Region can be a district or a state
+ * @prop {string} path - AccuWeather URL path to access data
  * @prop {Now} now - Current weather information, with felt temperature
  * @prop {Sun} sun - Current day sun time information
+ * @prop {Today} [today] - Today's information. Only available in english
  * @prop {Hourly[]} hourly - 12 hours of hourly forecasted temperature and rain
  * @prop {Daily[]} daily - 10 days of daily forecast, similar to "today"
- */
-
-/**
- * @typedef {Object} Location
- * @prop {string} city - For example: "Boulder"
- * @prop {string} region - Will give region as: "CO"
  */
 
 /**
