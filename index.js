@@ -37,6 +37,14 @@ function parseContent(html) {
 
 	html = html.replaceAll('°', '')
 
+	let location = htmlContentToStringArray(html, html.indexOf('<h1 '), html.indexOf('</h1>'))
+	const [city, region] = location[0].split(', ')
+
+	result.location = {
+		city,
+		region,
+	}
+
 	if (html.indexOf('today-forecast-card') > 0) {
 		let today = htmlContentToStringArray(
 			html,
@@ -192,7 +200,7 @@ async function getWeatherHTML(lat, lon, lang, unit) {
 
 	let text = await resp.text()
 
-	text = text.slice(text.indexOf('id="interstitial'), text.indexOf('id="bottom'))
+	text = text.slice(text.indexOf('</head>'))
 	text = text.replaceAll('\n', '').replaceAll('\t', '')
 	text = decode(text)
 
@@ -203,11 +211,18 @@ async function getWeatherHTML(lat, lon, lang, unit) {
 
 /**
  * @typedef {Object} AccuWeather
+ * @prop {Location} location - Found location by Accuweather
  * @prop {Today} [today] - Today's information. Only available in english
  * @prop {Now} now - Current weather information, with felt temperature
  * @prop {Sun} sun - Current day sun time information
  * @prop {Hourly[]} hourly - 12 hours of hourly forecasted temperature and rain
  * @prop {Daily[]} daily - 10 days of daily forecast, similar to "today"
+ */
+
+/**
+ * @typedef {Object} Location
+ * @prop {string} city - For example: "Boulder"
+ * @prop {string} region - Will give region as: "CO"
  */
 
 /**
