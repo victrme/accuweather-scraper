@@ -27,32 +27,37 @@ A single JSON object from all the information available on the "weather-forecast
 
 ```js
 const example = {
+  lat: '50.690',
+  lon: '3.175',
+  city: 'Roubaix',
+  region: 'Nord',
+  path: 'fr/roubaix/135632',
   now: {
-    icon: 7,
-    temp: 16,
-    feels: 15,
-    description: 'Nublado',
+    icon: 1,
+    temp: 24,
+    feels: 25,
+    description: 'Ensoleillé',
   },
   sun: {
-    duration: '14 h 17 min',
-    rise: 1714451460000,
-    set: 1714502880000,
+    duration: '14 h 48 min',
+    rise: 1714537260000,
+    set: 1714590540000,
   },
   hourly: [
     {
-      timestamp: 1714485600000,
-      temp: 14,
-      rain: '65 %',
+      timestamp: 1714564800000,
+      temp: 24,
+      rain: '0%',
     },
   ],
   daily: [
     {
-      timestamp: 1714485600000,
-      high: 16,
-      low: 8,
-      day: 'Chubascos en la tarde',
-      night: 'Algo de lluvia más tarde',
-      rain: '100 %',
+      timestamp: 1714564800000,
+      high: 24,
+      low: 12,
+      day: 'Nuages et soleil, devenant plus chaud et agréable',
+      night: 'Averses le soir; sinon, plutôt nuageux',
+      rain: '10%',
     },
   ],
 }
@@ -78,9 +83,14 @@ try {
 ```ts
 namespace AccuWeather {
   export interface Data {
-    today?: Today
+    lat: number
+    lon: number
+    city: string
+    region: string
+    path: string
     now: Now
     sun: Sun
+    today?: Today
     hourly: Hourly[]
     daily: Daily[]
   }
@@ -127,9 +137,12 @@ namespace AccuWeather {
 ```js
 /**
  * @typedef {Object} AccuWeather
- * @prop {Today} [today] - Today's information. Only available in english
+ * @prop {string} city - City location found by the provider
+ * @prop {string} region - Region can be a district or a state
+ * @prop {string} path - AccuWeather URL path to access data
  * @prop {Now} now - Current weather information, with felt temperature
  * @prop {Sun} sun - Current day sun time information
+ * @prop {Today} [today] - Today's information. Only available in english
  * @prop {Hourly[]} hourly - 12 hours of hourly forecasted temperature and rain
  * @prop {Daily[]} daily - 10 days of daily forecast, similar to "today"
  */
