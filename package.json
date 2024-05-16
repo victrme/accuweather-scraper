@@ -1,7 +1,8 @@
 {
 	"name": "accuweather-scraper",
 	"type": "module",
-	"version": "0.0.1",
+	"version": "0.1.1",
+	"private": true,
 	"scripts": {
 		"deploy": "wrangler deploy",
 		"dev": "wrangler dev",

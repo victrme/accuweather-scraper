@@ -31,7 +31,7 @@ const example = {
   lon: '3.175',
   city: 'Roubaix',
   region: 'Nord',
-  path: 'fr/roubaix/135632',
+  link: 'https://www.accuweather.com/en/fr/roubaix/135632/weather-forecast/135632',
   now: {
     icon: 1,
     temp: 24,
@@ -87,7 +87,7 @@ namespace AccuWeather {
     lon: number
     city: string
     region: string
-    path: string
+    link: string
     now: Now
     sun: Sun
     today?: Today
@@ -139,7 +139,7 @@ namespace AccuWeather {
  * @typedef {Object} AccuWeather
  * @prop {string} city - City location found by the provider
  * @prop {string} region - Region can be a district or a state
- * @prop {string} path - AccuWeather URL path to access data
+ * @prop {string} link - AccuWeather URL to access data
  * @prop {Now} now - Current weather information, with felt temperature
  * @prop {Sun} sun - Current day sun time information
  * @prop {Today} [today] - Today's information. Only available in english

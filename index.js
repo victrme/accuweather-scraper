@@ -216,7 +216,7 @@ async function getWeatherHTML(lat, lon, lang, unit) {
  * @typedef {Object} AccuWeather
  * @prop {string} city - City location found by the provider
  * @prop {string} region - Region can be a district or a state
- * @prop {string} path - AccuWeather URL path to access data
+ * @prop {string} link - AccuWeather URL to access data
  * @prop {Now} now - Current weather information, with felt temperature
  * @prop {Sun} sun - Current day sun time information
  * @prop {Today} [today] - Today's information. Only available in english
