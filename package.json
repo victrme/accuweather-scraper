@@ -1,9 +1,11 @@
 {
 	"name": "accuweather-scraper",
+	"type": "module",
 	"version": "0.0.1",
 	"scripts": {
 		"deploy": "wrangler deploy",
-		"dev": "wrangler dev"
+		"dev": "wrangler dev",
+		"test": "node ./index.test.js"
 	},
 	"devDependencies": {
 		"wrangler": "3.52.0"
