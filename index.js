@@ -44,10 +44,10 @@ function parseContent(html) {
 	result.city = city
 	result.region = region
 
-	let path = html.slice(html.indexOf('header-city-link'), html.indexOf('<h1'))
-	path = path.slice(path.indexOf('href') + 10, path.indexOf('/weather-forecast'))
+	let link = html.slice(html.indexOf('header-city-link'), html.indexOf('<h1'))
+	link = link.slice(link.indexOf('href="') + 6, link.indexOf('">'))
 
-	result.path = path
+	result.link = 'https://www.accuweather.com' + link
 
 	let icon = html.slice(html.indexOf('forecast-container'), html.indexOf('temp-container'))
 
