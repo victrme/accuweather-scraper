@@ -79,8 +79,8 @@ function parseContent(html) {
 	let [rh, rm] = sun[3].replace('AM', '').replace('PM', '').split(':')
 	let [sh, sm] = sun[5].replace('AM', '').replace('PM', '').split(':')
 
-	rm = parseInt(rm) + (sunrisePM ? 12 : 0)
-	sm = parseInt(sm) + (sunsetPM ? 12 : 0)
+	rh = parseInt(rh) + (sunrisePM ? 12 : 0)
+	sh = parseInt(sh) + (sunsetPM ? 12 : 0)
 
 	date = new Date()
 	const sunrise = new Date(date.getFullYear(), date.getMonth(), date.getDate(), rh, rm)
