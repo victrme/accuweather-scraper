@@ -1,6 +1,9 @@
 import { decode } from 'html-entities'
 import striptags from 'striptags'
 
+const ACCUWEATHER_LANGS =
+	'ar,az,bg,bn,bs,ca,cs,da,de,el,en-gb,en-us,es,es-ar,es-mx,et,fa,fi,fr,fr-ca,gu,he,hi,hr,hu,id,is,it,ja,kk,kn,ko,lt,lv,mk,mr,ms,my,nl,no,pa,pl,pt-br,pt-pt,ro,ru,sk,sl,sr,sr-me,sv,sw,ta,te,th,tl,tr,uk,ur,uz,vi,zh-cn,zh-hk,zh-tw'
+
 export default { fetch: main }
 
 async function main(request) {
@@ -9,8 +12,9 @@ async function main(request) {
 	const lang = url.searchParams.get('lang') ?? 'en'
 	const lat = url.searchParams.get('lat') ?? request.cf.latitude
 	const lon = url.searchParams.get('lon') ?? request.cf.longitude
+	const validlang = ACCUWEATHER_LANGS.includes(lang) ? lang : 'en'
 
-	const html = await getWeatherHTML(lat, lon, lang, unit)
+	const html = await getWeatherHTML(lat, lon, validlang, unit)
 	const json = parseContent(html)
 	const result = { lat, lon, ...json }
 
