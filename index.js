@@ -87,13 +87,19 @@ function parseContent(html) {
 	sh = parseInt(sh) + (sunsetPM ? 12 : 0)
 
 	date = new Date()
-	const sunrise = new Date(date.getFullYear(), date.getMonth(), date.getDate(), rh, rm)
-	const sunset = new Date(date.getFullYear(), date.getMonth(), date.getDate(), sh, sm)
+
+	date.setHours(rh)
+	date.setMinutes(rm)
+	const sunrise = date.getTime()
+
+	date.setHours(sh)
+	date.setMinutes(sm)
+	const sunset = date.getTime()
 
 	result.sun = {
 		duration: sun[1],
-		rise: sunrise.getTime(),
-		set: sunset.getTime(),
+		rise: sunrise,
+		set: sunset,
 	}
 
 	if (html.indexOf('today-forecast-card') > 0) {
